@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function Header({ onSignIn, onGetStarted }) {
+export default function Header({ onSignIn, onGetStarted, onOpenDashboard }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
@@ -33,6 +33,9 @@ export default function Header({ onSignIn, onGetStarted }) {
         </nav>
 
         <div className="button-group">
+          <button className="btn-secondary" onClick={onOpenDashboard}>
+            Dashboard
+          </button>
           <button className="btn-secondary" onClick={onSignIn}>
             Sign In
           </button>
@@ -62,6 +65,9 @@ export default function Header({ onSignIn, onGetStarted }) {
                   {link.label}
                 </a>
               ))}
+              <button className="btn-secondary" onClick={onOpenDashboard}>
+                Dashboard
+              </button>
               <button className="btn-secondary" onClick={onSignIn}>
                 Sign In
               </button>

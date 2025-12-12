@@ -1,4 +1,4 @@
-export default function Hero({ onStart }) {
+export default function Hero({ onStart, onOpenDashboard }) {
   return (
     <section className="hero-section">
       <div className="section-container">
@@ -15,7 +15,9 @@ export default function Hero({ onStart }) {
             <button className="btn-primary" onClick={onStart}>
               Start Your Consultation
             </button>
-              <button className="btn-secondary">Watch Demo</button>
+              <button className="btn-secondary" onClick={onOpenDashboard}>
+                View Admin Dashboard
+              </button>
             </div>
             <div className="hero-stats">
               <div className="stat-item">

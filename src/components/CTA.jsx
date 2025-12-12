@@ -1,4 +1,4 @@
-export default function CTA({ onGetStarted }) {
+export default function CTA({ onGetStarted, onOpenDashboard }) {
   return (
     <section className="cta-section">
       <div className="section-container">
@@ -13,8 +13,8 @@ export default function CTA({ onGetStarted }) {
           <button className="cta-button-primary" onClick={onGetStarted}>
               Get Started Free
             </button>
-            <button className="cta-button-secondary">
-              Schedule Demo
+            <button className="cta-button-secondary" onClick={onOpenDashboard}>
+              View Admin Dashboard
             </button>
           </div>
           <p className="cta-note">
