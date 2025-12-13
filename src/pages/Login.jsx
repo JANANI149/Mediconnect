@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { auth } from '../firebase';
+import { auth, db } from '../../backend/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -18,14 +19,63 @@ export default function LoginPage({ onBack }) {
 
     try {
       if (mode === 'signin') {
+        const normalizedEmail = email.trim().toLowerCase();
+        console.group('Hospital/Admin login');
+        console.log('Attempting sign-in for', normalizedEmail);
         await signInWithEmailAndPassword(auth, email, password);
-        setStatus({ loading: false, error: '', success: 'Signed in successfully.' });
+        console.log('Firebase auth successful for', normalizedEmail);
+
+        if (normalizedEmail === 'admin@gmail.com') {
+          setStatus({ loading: false, error: '', success: 'Signed in successfully. Redirecting to admin...' });
+          window.location.href = '/admin';
+          console.groupEnd();
+          return;
+        }
+
+        const hospitalsRef = collection(db, 'adminHospitals');
+        const hospitalQuery = query(hospitalsRef, where('email', '==', normalizedEmail));
+        const hospitalSnapshot = await getDocs(hospitalQuery);
+
+        if (hospitalSnapshot.empty) {
+          setStatus({
+            loading: false,
+            error: 'No hospital workspace found for this email. Please contact your platform admin.',
+            success: '',
+          });
+          return;
+        }
+
+        const hospitalDoc = hospitalSnapshot.docs[0];
+        sessionStorage.setItem(
+          'hospitalSession',
+          JSON.stringify({
+            hospitalId: hospitalDoc.id,
+            email: normalizedEmail,
+          })
+        );
+
+        setStatus({ loading: false, error: '', success: 'Signed in successfully. Redirecting to hospital dashboard...' });
+        console.log('Hospital workspace found for', normalizedEmail, '→', hospitalDoc.id);
+        console.groupEnd();
+        window.location.href = '/hospital';
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
         setStatus({ loading: false, error: '', success: 'Account created and signed in.' });
       }
     } catch (error) {
-      const message = error?.message || 'Something went wrong. Please try again.';
+      console.error('Authentication flow failed', error);
+      console.groupEnd?.();
+      let message = error?.message || 'Something went wrong. Please try again.';
+      
+      // Provide more specific error messages for common authentication issues
+      if (error.code === 'auth/invalid-credential') {
+        message = 'Invalid email or password. Please check your credentials and try again.';
+      } else if (error.code === 'auth/user-not-found') {
+        message = 'No account found with this email. Please check your email or contact your administrator.';
+      } else if (error.code === 'auth/wrong-password') {
+        message = 'Incorrect password. Please try again or reset your password.';
+      }
+      
       setStatus({ loading: false, error: message, success: '' });
     }
   };

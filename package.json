@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "create-hospital": "node create-test-hospital.js",
+    "fix-hospital-auth": "node fix-hospital-auth.js",
+    "test-firestore": "node test-firestore.js",
+    "create-missing-auth": "node create-missing-auth-user.js"
   },
   "keywords": [],
   "author": "",
